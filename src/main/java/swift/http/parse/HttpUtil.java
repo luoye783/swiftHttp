@@ -20,7 +20,7 @@ public class HttpUtil {
 //        // SSL Socket 工厂类
         SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 //        // 创建 SSL Socket
-        SSLSocket socket = (SSLSocket) factory.createSocket(parsedUrl.getHost(), parsedUrl.getDefaultPort());
+        SSLSocket socket = (SSLSocket) factory.createSocket(parsedUrl.getHost(), parsedUrl.getPort()<=0?parsedUrl.getDefaultPort():parsedUrl.getPort());
 //        // 启用所有密码组，可以更安全的访问 HTTPS 站点
         socket.setEnabledCipherSuites(socket.getSupportedCipherSuites());
         // 创建 HTTP 请求
@@ -34,7 +34,8 @@ public class HttpUtil {
         InputStream inputStream = socket.getInputStream();
 
         HttpResponse response = HttpResponse.fromInputStream(inputStream);
-
+        outputStream.close();
+        inputStream.close();
         // 关闭 Socket
         socket.close();
 

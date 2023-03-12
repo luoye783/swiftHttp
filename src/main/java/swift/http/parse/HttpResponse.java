@@ -1,19 +1,19 @@
 package swift.http.parse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import static swift.http.parse.Constant.REGX_BR;
+
 public class HttpResponse {
-    private String version;
-    private int statusCode;
-    private String statusMessage;
-    private Map<String, String> headers;
-    private String body;
+    private final String version;
+    private final int statusCode;
+    private final String statusMessage;
+    private final Map<String, String> headers;
+    private final String body;
 
     public HttpResponse(String version, int statusCode, String statusMessage, Map<String, String> headers, String body) {
         this.version = version;
@@ -57,12 +57,12 @@ public class HttpResponse {
             sb.append(new String(buffer, 0, bytesRead, StandardCharsets.UTF_8));
         }
 
-        String[] lines = sb.toString().split("\\r\\n\\r\\n");
-        String[] headers = lines[0].split("\\r\\n");
+        String[] lines = sb.toString().split(REGX_BR+REGX_BR);
+        String[] headers = lines[0].split(REGX_BR);
         String[] statusLine = headers[0].split(" ");
         String version = statusLine[0];
         int statusCode = Integer.parseInt(statusLine[1]);
-        String statusMessage = statusLine[2];
+        String statusMessage = statusLine.length >2 ?statusLine[2]:"";
         Map<String, String> headerMap = new HashMap<>();
         for (int i = 1; i < headers.length; i++) {
             String[] headerPair = headers[i].split(": ");
@@ -75,16 +75,5 @@ public class HttpResponse {
         return new HttpResponse(version, statusCode, statusMessage, headerMap, body);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s %d %s\r\n", version, statusCode, statusMessage));
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            sb.append(String.format("%s: %s\r\n", entry.getKey(), entry.getValue()));
-        }
-        sb.append("\r\n");
-        sb.append(body);
-        return sb.toString();
-    }
 }
 
