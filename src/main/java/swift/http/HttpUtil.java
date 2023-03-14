@@ -1,4 +1,7 @@
-package swift.http.parse;
+package swift.http;
+
+import swift.http.parse.HttpRequest;
+import swift.http.parse.HttpResponse;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
